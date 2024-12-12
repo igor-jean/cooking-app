@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Card from "./components/Card";
+
 
 function App() {
+
+  const [dataCook, setDataCook] = useState([]);
+  const [inputSearch, setInputSearch] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("https://www.themealdb.com/api/json/v1/1/search.php?s=" + inputSearch)
+      .then((res) => {
+          setDataCook(res.data.meals);
+      })
+  }, [inputSearch])
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="header">
+        <h1>React Cook</h1>
+        <input type="text" placeholder="Tapez le nom d'un aliment (en anglais)" onChange={(e) => setInputSearch(e.target.value)} />
+      </div>
+      <div className="recipeContainer">
+        {
+          dataCook ? 
+          dataCook
+            .map((recipe) => (
+              <Card key={recipe.idMeal} recipe={recipe}/>
+
+            ))
+            :
+            <p>Aucune recette</p>
+        }
+      </div>
+    </>
   );
 }
 
